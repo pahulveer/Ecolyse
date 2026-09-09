@@ -11,13 +11,12 @@ export const FutureLandscape: React.FC<FutureLandscapeProps> = ({
   currentTonnes,
   simulatedTonnes,
 }) => {
-  // Target footprint with recommended changes:
-  // Assumes realistic achievable 25-35% reduction from top actions
+  const safeCurrent = Number(currentTonnes) || 2.0;
   const futureTonnes = simulatedTonnes !== undefined 
-    ? simulatedTonnes 
-    : Math.max(1.8, Number((currentTonnes * 0.72).toFixed(1)));
+    ? (Number(simulatedTonnes) || 1.8) 
+    : Math.max(1.8, Number((safeCurrent * 0.72).toFixed(1)));
 
-  const reduction = Math.max(0, Number((currentTonnes - futureTonnes).toFixed(1)));
+  const reduction = Math.max(0, Number((safeCurrent - futureTonnes).toFixed(1)));
   const healthPercent = Math.min(100, Math.max(15, Math.round((1 - (futureTonnes / 12)) * 100)));
 
   return (

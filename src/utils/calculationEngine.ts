@@ -7,6 +7,7 @@ import type {
   WhatIfOverrides
 } from '../types/calculator';
 import { EMISSION_FACTORS, BENCHMARKS } from '../data/emissionFactors';
+import { DEFAULT_CALCULATOR_STATE } from '../data/presets';
 
 /**
  * Pure calculation engine for ECOLYSE — India Calibrated.
@@ -22,16 +23,17 @@ export function kwhToInrBill(kwh: number): number {
 }
 
 export function calculateFootprint(state: CalculatorState): CalculationResult {
-  const occupants = Math.max(1, state.home.occupants || 1);
+  const safeState = state || DEFAULT_CALCULATOR_STATE;
+  const occupants = Math.max(1, Number(safeState.home?.occupants) || 1);
 
   // ----------------------------------------------------
   // 1. HOME & ENERGY (Divided among household members)
   // ----------------------------------------------------
   // Monthly electricity Units (kWh) on Indian CEA grid
-  const monthlyUnits = state.home.electricityKwhPerMonth || 
-    (state.home.monthlyBillInr ? inrBillToKwh(state.home.monthlyBillInr) : 250);
+  const monthlyUnits = Math.max(0, Number(safeState.home?.electricityKwhPerMonth) || 
+    (safeState.home?.monthlyBillInr ? inrBillToKwh(safeState.home.monthlyBillInr) : 250));
   const annualElectricityUnits = monthlyUnits * 12;
-  const cleanRatio = Math.min(1, Math.max(0, (state.home.cleanEnergyPercent || 0) / 100));
+  const cleanRatio = Math.min(1, Math.max(0, (Number(safeState.home?.cleanEnergyPercent) || 0) / 100));
   const dirtyRatio = 1 - cleanRatio;
   
   const ceaGridIntensity = EMISSION_FACTORS.electricity.standardGridAverage.value; // ~0.716 kg/kWh
@@ -43,22 +45,23 @@ export function calculateFootprint(state: CalculatorState): CalculationResult {
      (annualElectricityUnits * cleanRatio * cleanIntensity)) / 1000; // to tonnes
 
   // Cooking Fuel (LPG cylinder, PNG, Induction, Chulha)
-  const cookingBase = EMISSION_FACTORS.cookingAndHeating[state.home.cookingFuelType]?.value || 0.28;
+  const cookingFuel = safeState.home?.cookingFuelType || 'lpg_cylinder';
+  const cookingBase = EMISSION_FACTORS.cookingAndHeating[cookingFuel]?.value || 0.28;
 
   // Air Conditioning efficiency & summer thermal cooling load
-  const acDailyHours = Math.max(0, state.home.acUsageHoursPerDay || 0);
-  const acMultiplier = EMISSION_FACTORS.appliances.acStarRatingMultiplier[state.home.acStarRating || 'inverter_3star'] || 1.0;
+  const acDailyHours = Math.max(0, Number(safeState.home?.acUsageHoursPerDay) || 0);
+  const acMultiplier = EMISSION_FACTORS.appliances.acStarRatingMultiplier[safeState.home?.acStarRating || 'inverter_3star'] || 1.0;
   // Estimated summer cooling load (120 days): Inverter 3-Star baseline is ~1.15 kW
   const acSeasonalKwh = acDailyHours * 1.15 * acMultiplier * 120;
   const acEmissionsAttributed = (acSeasonalKwh * dirtyRatio * ceaGridIntensity) / 1000;
 
-  // Water heating footprint (storage geyser, instant, solar, gas)
-  const waterHeatingTonnes = EMISSION_FACTORS.appliances.waterHeating[state.home.waterHeatingType || 'electric_storage_geyser'] || 0.12;
+  // Water Heating footprint (storage geyser, instant, solar, gas)
+  const waterHeatingTonnes = EMISSION_FACTORS.appliances.waterHeating[safeState.home?.waterHeatingType || 'electric_storage_geyser'] || 0.12;
 
   // Housing envelope thermal gain multiplier
-  const envelopeMultiplier = state.home.homeType === 'apartment_flat' ? 0.85 :
-                             state.home.homeType === 'builder_floor' ? 0.95 :
-                             state.home.homeType === 'row_house_villa' ? 1.05 : 1.15;
+  const envelopeMultiplier = safeState.home?.homeType === 'apartment_flat' ? 0.85 :
+                             safeState.home?.homeType === 'builder_floor' ? 0.95 :
+                             safeState.home?.homeType === 'row_house_villa' ? 1.05 : 1.15;
 
   const totalHouseholdEmissions = (electricityEmissionsTotal + cookingBase + waterHeatingTonnes) * envelopeMultiplier;
   const homeTonnes = Math.max(0.15, Number((totalHouseholdEmissions / occupants).toFixed(2)));
@@ -66,82 +69,80 @@ export function calculateFootprint(state: CalculatorState): CalculationResult {
   // ----------------------------------------------------
   // 2. TRANSPORTATION (Daily/Weekly Commute)
   // ----------------------------------------------------
-  const annualCommuteKm = state.transport.weeklyCommuteKm * 50;
-  const modeKey = state.transport.primaryMode;
+  const annualCommuteKm = (Number(safeState.transport?.weeklyCommuteKm) || 0) * 50;
+  const modeKey = safeState.transport?.primaryMode || 'motorcycle_petrol';
   let transportFactor = EMISSION_FACTORS.transport[modeKey]?.value ?? 0.045;
 
   // Mileage scaling for fuel vehicles
+  const vehicleMileage = Math.max(5, Number(safeState.transport?.vehicleMileageKmpl) || 45);
   if (modeKey === 'motorcycle_petrol') {
-    // 50 km/l standard baseline
-    const mileageRatio = 50 / Math.max(20, state.transport.vehicleMileageKmpl);
+    const mileageRatio = 50 / Math.max(20, vehicleMileage);
     transportFactor *= mileageRatio;
   } else if (modeKey === 'petrol_car' || modeKey === 'diesel_car') {
-    // 16 km/l standard car baseline
-    const mileageRatio = 16 / Math.max(8, state.transport.vehicleMileageKmpl);
+    const mileageRatio = 16 / Math.max(8, vehicleMileage);
     transportFactor *= mileageRatio;
   } else if (modeKey === 'cng_car') {
-    // 24 km/kg standard baseline
-    const mileageRatio = 24 / Math.max(12, state.transport.vehicleMileageKmpl);
+    const mileageRatio = 24 / Math.max(12, vehicleMileage);
     transportFactor *= mileageRatio;
   } else if (modeKey === 'hybrid_car') {
-    // 25 km/l strong hybrid baseline
-    const mileageRatio = 25 / Math.max(15, state.transport.vehicleMileageKmpl);
+    const mileageRatio = 25 / Math.max(15, vehicleMileage);
     transportFactor *= mileageRatio;
   }
 
   // Carpooling / Pillion sharing discount
-  const carpoolDiscount = state.transport.carpoolFrequency === 'always' ? 0.5 :
-                          state.transport.carpoolFrequency === 'sometimes' ? 0.75 : 1.0;
+  const carpoolDiscount = safeState.transport?.carpoolFrequency === 'always' ? 0.5 :
+                          safeState.transport?.carpoolFrequency === 'sometimes' ? 0.75 : 1.0;
 
   const transportTonnes = Math.max(0, Number(((annualCommuteKm * transportFactor * carpoolDiscount) / 1000).toFixed(2)));
 
   // ----------------------------------------------------
   // 3. TRAVEL (Flights & Indian Railways)
   // ----------------------------------------------------
-  const cabinMultiplier = EMISSION_FACTORS.aviation.cabinClassMultiplier[state.travel.flightCabinClass || 'economy'] || 1.0;
+  const cabinMultiplier = EMISSION_FACTORS.aviation.cabinClassMultiplier[safeState.travel?.flightCabinClass || 'economy'] || 1.0;
 
-  const shortHaulKm = state.travel.shortHaulFlightsPerYear * EMISSION_FACTORS.aviation.shortHaul.averageDistanceKm;
-  const mediumHaulKm = state.travel.mediumHaulFlightsPerYear * EMISSION_FACTORS.aviation.mediumHaul.averageDistanceKm;
-  const longHaulKm = state.travel.longHaulFlightsPerYear * EMISSION_FACTORS.aviation.longHaul.averageDistanceKm;
+  const shortHaulKm = (Number(safeState.travel?.shortHaulFlightsPerYear) || 0) * EMISSION_FACTORS.aviation.shortHaul.averageDistanceKm;
+  const mediumHaulKm = (Number(safeState.travel?.mediumHaulFlightsPerYear) || 0) * EMISSION_FACTORS.aviation.mediumHaul.averageDistanceKm;
+  const longHaulKm = (Number(safeState.travel?.longHaulFlightsPerYear) || 0) * EMISSION_FACTORS.aviation.longHaul.averageDistanceKm;
 
   const shortHaulTonnes = (shortHaulKm * EMISSION_FACTORS.aviation.shortHaul.emissionFactorKgPerKm * cabinMultiplier) / 1000;
   const mediumHaulTonnes = (mediumHaulKm * EMISSION_FACTORS.aviation.mediumHaul.emissionFactorKgPerKm * cabinMultiplier) / 1000;
   const longHaulTonnes = (longHaulKm * EMISSION_FACTORS.aviation.longHaul.emissionFactorKgPerKm * cabinMultiplier) / 1000;
 
   // Indian Railways (average 650 km per intercity journey)
-  const railTonnes = (state.travel.indianRailwaysTripsPerYear * 650 * EMISSION_FACTORS.transport.train_metro.value) / 1000;
+  const railTonnes = ((Number(safeState.travel?.indianRailwaysTripsPerYear) || 0) * 650 * EMISSION_FACTORS.transport.train_metro.value) / 1000;
   // Outstation road trips
-  const roadTripTonnes = (state.travel.annualRoadTripKm * EMISSION_FACTORS.transport.petrol_car.value) / 1000;
+  const roadTripTonnes = ((Number(safeState.travel?.annualRoadTripKm) || 0) * EMISSION_FACTORS.transport.petrol_car.value) / 1000;
 
   const travelTonnes = Math.max(0, Number((shortHaulTonnes + mediumHaulTonnes + longHaulTonnes + railTonnes + roadTripTonnes).toFixed(2)));
 
   // ----------------------------------------------------
   // 4. FOOD & DIET
   // ----------------------------------------------------
-  const baseDiet = EMISSION_FACTORS.diet[state.food.dietType]?.value || 1.15;
-  const wasteMultiplier = state.food.foodWasteLevel === 'high' ? 1.20 :
-                          state.food.foodWasteLevel === 'low' ? 0.90 : 1.0;
+  const baseDiet = EMISSION_FACTORS.diet[safeState.food?.dietType || 'pure_vegetarian']?.value || 1.15;
+  const wasteMultiplier = safeState.food?.foodWasteLevel === 'high' ? 1.20 :
+                          safeState.food?.foodWasteLevel === 'low' ? 0.90 : 1.0;
   // Mandi / Local seasonal sabzi sourcing discount (up to 12% reduction)
-  const localSeasonalDiscount = 1 - (((state.food.localSeasonalShare || 50) / 100) * 0.12);
-  const dairyAddon = state.food.dairyConsumption === 'high' ? 0.18 :
-                     state.food.dairyConsumption === 'low' ? -0.10 : 0.0;
+  const localSeasonalDiscount = 1 - (((Number(safeState.food?.localSeasonalShare) || 50) / 100) * 0.12);
+  const dairyAddon = safeState.food?.dairyConsumption === 'high' ? 0.18 :
+                     safeState.food?.dairyConsumption === 'low' ? -0.10 : 0.0;
   // Dining out / Delivery packaging and commercial kitchen factor
-  const diningAddon = state.food.diningOutDeliveryFrequency === 'daily' ? 0.16 :
-                      state.food.diningOutDeliveryFrequency === 'weekly' ? 0.07 : 0.02;
+  const diningAddon = safeState.food?.diningOutDeliveryFrequency === 'daily' ? 0.16 :
+                      safeState.food?.diningOutDeliveryFrequency === 'weekly' ? 0.07 : 0.02;
 
   const foodTonnes = Math.max(0.35, Number(((baseDiet * wasteMultiplier * localSeasonalDiscount) + dairyAddon + diningAddon).toFixed(2)));
 
   // ----------------------------------------------------
   // 5. SHOPPING & CONSUMPTION
   // ----------------------------------------------------
-  const apparelEmissions = EMISSION_FACTORS.consumption.apparel[state.shopping.clothingFrequency] || 0.15;
-  const electronicsEmissions = EMISSION_FACTORS.consumption.electronics.annualTonnesPerDeviceRefresh / Math.max(1, state.shopping.electronicsRefreshYears);
+  const apparelEmissions = EMISSION_FACTORS.consumption.apparel[safeState.shopping?.clothingFrequency || 'seasonally'] || 0.15;
+  const refreshYears = Math.max(1, Number(safeState.shopping?.electronicsRefreshYears) || 3);
+  const electronicsEmissions = EMISSION_FACTORS.consumption.electronics.annualTonnesPerDeviceRefresh / refreshYears;
   
   // Second-hand / Refurbished discount
-  const secondHandDiscount = 1 - (((state.shopping.secondHandSharePercent || 0) / 100) * 0.40);
+  const secondHandDiscount = 1 - (((Number(safeState.shopping?.secondHandSharePercent) || 0) / 100) * 0.40);
   
-  const deliveryEmissions = state.shopping.onlineDeliveryFrequency === 'daily' ? 0.18 :
-                            state.shopping.onlineDeliveryFrequency === 'weekly' ? 0.06 : 0.02;
+  const deliveryEmissions = safeState.shopping?.onlineDeliveryFrequency === 'daily' ? 0.18 :
+                            safeState.shopping?.onlineDeliveryFrequency === 'weekly' ? 0.06 : 0.02;
 
   const shoppingTonnes = Math.max(0.08, Number((((apparelEmissions + electronicsEmissions) * secondHandDiscount) + deliveryEmissions).toFixed(2)));
 
@@ -150,17 +151,17 @@ export function calculateFootprint(state: CalculatorState): CalculationResult {
   // ----------------------------------------------------
   let wasteBaseline = EMISSION_FACTORS.consumption.waste.baselineLandfillTonnes;
   // Doorstep scrap collection (Kabadiwala)
-  if (state.waste.kabadiwalaRecycling === 'regular') {
+  if (safeState.waste?.kabadiwalaRecycling === 'regular') {
     wasteBaseline -= EMISSION_FACTORS.consumption.waste.kabadiwalaReductionCredit;
-  } else if (state.waste.kabadiwalaRecycling === 'occasional') {
+  } else if (safeState.waste?.kabadiwalaRecycling === 'occasional') {
     wasteBaseline -= (EMISSION_FACTORS.consumption.waste.kabadiwalaReductionCredit * 0.5);
   }
 
-  if (state.waste.compostsOrganicWaste) {
+  if (safeState.waste?.compostsOrganicWaste) {
     wasteBaseline -= EMISSION_FACTORS.consumption.waste.compostingReductionCredit;
   }
 
-  if (state.waste.avoidsSingleUsePlastic === 'always') {
+  if (safeState.waste?.avoidsSingleUsePlastic === 'always') {
     wasteBaseline -= 0.04;
   }
 
@@ -169,16 +170,23 @@ export function calculateFootprint(state: CalculatorState): CalculationResult {
   // ----------------------------------------------------
   // 7. LIFESTYLE & OTHER
   // ----------------------------------------------------
-  const petTonnes = EMISSION_FACTORS.consumption.pet[state.lifestyle.petOwnership] || 0;
-  const digitalTonnes = EMISSION_FACTORS.consumption.digital[state.lifestyle.digitalFootprintTier] || 0.10;
-  const ecoHabitsCredit = state.lifestyle.apparelEcoConscious ? -0.05 : 0;
+  const petTonnes = EMISSION_FACTORS.consumption.pet[safeState.lifestyle?.petOwnership || 'none'] || 0;
+  const digitalTonnes = EMISSION_FACTORS.consumption.digital[safeState.lifestyle?.digitalFootprintTier || 'moderate'] || 0.10;
+  const ecoHabitsCredit = safeState.lifestyle?.apparelEcoConscious ? -0.05 : 0;
 
   const lifestyleTonnes = Math.max(0.04, Number((petTonnes + digitalTonnes + ecoHabitsCredit).toFixed(2)));
 
   // ----------------------------------------------------
   // AGGREGATION & CATEGORIES
   // ----------------------------------------------------
-  const totalTonnes = Number((homeTonnes + transportTonnes + travelTonnes + foodTonnes + shoppingTonnes + wasteTonnes + lifestyleTonnes).toFixed(2));
+  const rawTotal = (Number(homeTonnes) || 0) + 
+                   (Number(transportTonnes) || 0) + 
+                   (Number(travelTonnes) || 0) + 
+                   (Number(foodTonnes) || 0) + 
+                   (Number(shoppingTonnes) || 0) + 
+                   (Number(wasteTonnes) || 0) + 
+                   (Number(lifestyleTonnes) || 0);
+  const totalTonnes = Math.max(0.1, Number(rawTotal.toFixed(2)));
 
   const categories: Record<CategoryKey, CategoryResult> = {
     home: {
@@ -282,13 +290,15 @@ export function calculateFootprint(state: CalculatorState): CalculationResult {
   // ----------------------------------------------------
   // BENCHMARKS & OVERALL IMPACT SCORE
   // ----------------------------------------------------
+  const vsIndia = Math.round(((totalTonnes - BENCHMARKS.indiaAverage) / BENCHMARKS.indiaAverage) * 100);
+  const vsGlobal = Math.round(((totalTonnes - BENCHMARKS.globalAverage) / BENCHMARKS.globalAverage) * 100);
   const benchmarkComparison = {
     indiaAverage: BENCHMARKS.indiaAverage,     // 1.9 tonnes
     parisTarget2030: BENCHMARKS.parisTarget2030, // 2.1 tonnes
     globalAverage: BENCHMARKS.globalAverage,   // 4.8 tonnes
     usAverage: BENCHMARKS.usAverage,           // 14.9 tonnes
-    vsIndiaPercentage: Math.round(((totalTonnes - BENCHMARKS.indiaAverage) / BENCHMARKS.indiaAverage) * 100),
-    vsGlobalPercentage: Math.round(((totalTonnes - BENCHMARKS.globalAverage) / BENCHMARKS.globalAverage) * 100)
+    vsIndiaPercentage: isNaN(vsIndia) ? 0 : vsIndia,
+    vsGlobalPercentage: isNaN(vsGlobal) ? 0 : vsGlobal
   };
 
   // 0 - 100 Impact Score in Indian Context
@@ -302,9 +312,16 @@ export function calculateFootprint(state: CalculatorState): CalculationResult {
   } else {
     impactScore = Math.max(8, Math.round(30 - ((totalTonnes - 7.0) / 10) * 20));
   }
+  if (isNaN(impactScore)) impactScore = 75;
 
   // Identify biggest impact
-  const biggest = categoryList[0];
+  const biggest = categoryList[0] || {
+    category: 'home' as CategoryKey,
+    label: 'Home & Electricity',
+    icon: 'Home',
+    tonnes: totalTonnes,
+    percentage: 100,
+  };
   const biggestImpact = {
     category: biggest.category,
     label: biggest.label,
@@ -329,10 +346,12 @@ export function calculateFootprint(state: CalculatorState): CalculationResult {
 }
 
 function calculateCategoryScore(tonnes: number, target: number): number {
-  if (tonnes <= target) {
-    return Math.min(100, Math.round(85 + (target - tonnes) * 12));
+  const safeTonnes = Number(tonnes) || 0;
+  const safeTarget = target || 1;
+  if (safeTonnes <= safeTarget) {
+    return Math.min(100, Math.round(85 + (safeTarget - safeTonnes) * 12));
   }
-  const diffRatio = (tonnes - target) / target;
+  const diffRatio = (safeTonnes - safeTarget) / safeTarget;
   return Math.max(15, Math.round(85 - diffRatio * 40));
 }
 
@@ -359,8 +378,10 @@ function generateIndiaRecommendations(state: CalculatorState, categories: Record
   const list: ActionRecommendation[] = [];
 
   // Home: PM Surya Ghar Rooftop Solar
-  if (state.home.cleanEnergyPercent < 80) {
-    const solarSavings = Number((categories.home.contributors[0]?.tonnes * (1 - state.home.cleanEnergyPercent / 100) * 0.85).toFixed(2));
+  const homeClean = Number(state.home?.cleanEnergyPercent) || 0;
+  const homeTonnes = Number(categories?.home?.contributors?.[0]?.tonnes) || Number(categories?.home?.tonnes) || 0;
+  if (homeClean < 80) {
+    const solarSavings = Number((homeTonnes * (1 - homeClean / 100) * 0.85).toFixed(2)) || 0;
     if (solarSavings > 0.2) {
       list.push({
         id: 'rec_rooftop_solar',
@@ -377,12 +398,13 @@ function generateIndiaRecommendations(state: CalculatorState, categories: Record
   }
 
   // Transport: EV Two-Wheeler / Electric Scooter
-  if (state.transport.primaryMode === 'motorcycle_petrol') {
+  const transportTonnes = Number(categories?.transport?.tonnes) || 0;
+  if (state.transport?.primaryMode === 'motorcycle_petrol') {
     list.push({
       id: 'rec_ev_scooter',
       category: 'transport',
       title: 'Switch Commute to an Electric Scooter (Ather / Ola / TVS iQube)',
-      potentialReductionTonnes: Number((categories.transport.tonnes * 0.68).toFixed(2)),
+      potentialReductionTonnes: Number((transportTonnes * 0.68).toFixed(2)) || 0.4,
       difficulty: 'Easy',
       cost: '₹₹',
       timeframe: '1-2 weeks',
@@ -392,12 +414,12 @@ function generateIndiaRecommendations(state: CalculatorState, categories: Record
   }
 
   // Transport: Metro & Public Transit
-  if (state.transport.primaryMode === 'petrol_car' || state.transport.primaryMode === 'diesel_car') {
+  if (state.transport?.primaryMode === 'petrol_car' || state.transport?.primaryMode === 'diesel_car') {
     list.push({
       id: 'rec_metro_transit',
       category: 'transport',
       title: 'Shift 3 Days of Car Commute to Metro Rail or City Bus',
-      potentialReductionTonnes: Number((categories.transport.tonnes * 0.55).toFixed(2)),
+      potentialReductionTonnes: Number((transportTonnes * 0.55).toFixed(2)) || 0.6,
       difficulty: 'Easy',
       cost: '₹',
       timeframe: 'Immediate',
@@ -407,7 +429,7 @@ function generateIndiaRecommendations(state: CalculatorState, categories: Record
   }
 
   // Travel: Choose Vande Bharat / Indian Railways
-  if (state.travel.shortHaulFlightsPerYear > 0) {
+  if (Number(state.travel?.shortHaulFlightsPerYear) > 0) {
     const flightSavings = Number((EMISSION_FACTORS.aviation.shortHaul.averageDistanceKm * EMISSION_FACTORS.aviation.shortHaul.emissionFactorKgPerKm / 1000).toFixed(2));
     list.push({
       id: 'rec_vande_bharat',

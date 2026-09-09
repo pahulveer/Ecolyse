@@ -174,10 +174,10 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setIsCalculating(true);
     // Smooth cinematic calculation transition
     setTimeout(() => {
-      setIsCalculating(false);
       setView('results');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 1200);
+      setIsCalculating(false);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }, 900);
   };
 
   const toggleCommitAction = (id: string) => {
@@ -187,10 +187,10 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const totalCommittedSavings = useMemo(() => {
-    return calculationResult.recommendations
+    return (calculationResult?.recommendations || [])
       .filter(r => committedActionIds.includes(r.id))
-      .reduce((sum, r) => sum + r.potentialReductionTonnes, 0);
-  }, [calculationResult.recommendations, committedActionIds]);
+      .reduce((sum, r) => sum + (Number(r.potentialReductionTonnes) || 0), 0);
+  }, [calculationResult?.recommendations, committedActionIds]);
 
   const updateWhatIfOverride = <K extends keyof WhatIfOverrides>(
     field: K,

@@ -11,7 +11,7 @@ export const FootprintCounter: React.FC<FootprintCounterProps> = ({ result }) =>
 
   useEffect(() => {
     let start = 0;
-    const end = result.totalTonnes;
+    const end = Number(result?.totalTonnes) || 0;
     const duration = 1200; // ms
     const steps = 40;
     const stepTime = duration / steps;
@@ -28,9 +28,9 @@ export const FootprintCounter: React.FC<FootprintCounterProps> = ({ result }) =>
     }, stepTime);
 
     return () => clearInterval(timer);
-  }, [result.totalTonnes]);
+  }, [result?.totalTonnes]);
 
-  const vsIndia = result.benchmarkComparison.vsIndiaPercentage;
+  const vsIndia = Number(result?.benchmarkComparison?.vsIndiaPercentage) || 0;
   const isLowerThanIndia = vsIndia <= 0;
 
   return (
@@ -51,7 +51,7 @@ export const FootprintCounter: React.FC<FootprintCounterProps> = ({ result }) =>
       {/* Huge Counter Readout */}
       <div className="my-4 flex items-baseline justify-center gap-2">
         <span className="text-6xl sm:text-7xl lg:text-8xl font-black font-mono tracking-tight text-white glow-text-emerald">
-          {displayedValue.toFixed(1)}
+          {(Number(displayedValue) || 0).toFixed(1)}
         </span>
         <div className="text-left font-sans">
           <div className="text-base sm:text-xl font-bold text-emerald-400 leading-none">tonnes</div>

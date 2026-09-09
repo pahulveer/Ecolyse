@@ -20,16 +20,32 @@ import { ShareResultModal } from './ShareResultModal';
 import { useState } from 'react';
 import { springPop, springSmooth } from '../common/MotionPrimitives';
 
-// Scroll-reveal section wrapper
+// Immediate hero section wrapper (never trapped by scroll intersection)
+const HeroSection: React.FC<{ children: React.ReactNode; delay?: number; className?: string }> = ({
+  children,
+  delay = 0,
+  className,
+}) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ type: 'spring', stiffness: 220, damping: 24, delay }}
+    className={className}
+  >
+    {children}
+  </motion.div>
+);
+
+// Scroll-reveal section wrapper for lower sections with zero negative margin
 const RevealSection: React.FC<{ children: React.ReactNode; delay?: number; className?: string }> = ({
   children,
   delay = 0,
   className,
 }) => (
   <motion.div
-    initial={{ opacity: 0, y: 36, scale: 0.98 }}
-    whileInView={{ opacity: 1, y: 0, scale: 1 }}
-    viewport={{ once: true, margin: '-80px' }}
+    initial={{ opacity: 0, y: 28 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: '0px' }}
     transition={{ type: 'spring', stiffness: 200, damping: 26, delay }}
     className={className}
   >
@@ -46,6 +62,14 @@ export const ResultsDashboard: React.FC = () => {
   } = useCalculator();
 
   const [shareModalOpen, setShareModalOpen] = useState(false);
+
+  if (!calculationResult || !calculationResult.categoryList) {
+    return (
+      <div className="min-h-[50vh] flex flex-col items-center justify-center p-8 text-center text-zinc-400">
+        <p className="text-sm">Preparing your carbon footprint calculations...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
@@ -108,19 +132,19 @@ export const ResultsDashboard: React.FC = () => {
       </motion.div>
 
       {/* 1. Footprint Big Counter & Benchmarks — immediate hero reveal */}
-      <RevealSection delay={0}>
+      <HeroSection delay={0}>
         <FootprintCounter result={calculationResult} />
-      </RevealSection>
+      </HeroSection>
 
       {/* 2. Biggest Impact Spotlight */}
-      <RevealSection delay={0.05}>
+      <HeroSection delay={0.06}>
         <BiggestImpactCard biggestImpact={calculationResult.biggestImpact} />
-      </RevealSection>
+      </HeroSection>
 
       {/* 3. Interactive Category Breakdown Donut & Inspector */}
-      <RevealSection delay={0.08}>
+      <HeroSection delay={0.12}>
         <BreakdownChart result={calculationResult} />
-      </RevealSection>
+      </HeroSection>
 
       {/* 4. Action Plan / Top 5 Recommendations */}
       <RevealSection>

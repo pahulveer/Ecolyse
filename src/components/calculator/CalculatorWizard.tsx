@@ -76,12 +76,17 @@ export const CalculatorWizard: React.FC = () => {
   // Keyboard shortcut listener (Enter = Next)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (['INPUT', 'SELECT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return;
-      if (e.key === 'Enter') handleNext();
+      if (e.repeat) return;
+      if (['TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return;
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        playNextSound();
+        handleNext();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentStepIndex]);
+  }, [currentStepIndex, isLastStep]);
 
   if (isCalculating) {
     return (

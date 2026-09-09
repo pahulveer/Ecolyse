@@ -24,7 +24,9 @@ export const PRESET_PROFILES: PresetProfile[] = [
         electricityKwhPerMonth: 280, // Units/mo
         cleanEnergyPercent: 10,
         cookingFuelType: 'lpg_cylinder',
-        acUsageHoursPerDay: 5
+        acUsageHoursPerDay: 5,
+        acStarRating: 'inverter_3star',
+        waterHeatingType: 'electric_storage_geyser'
       },
       transport: {
         primaryMode: 'motorcycle_petrol',
@@ -44,7 +46,8 @@ export const PRESET_PROFILES: PresetProfile[] = [
         dietType: 'pure_vegetarian',
         foodWasteLevel: 'average',
         localSeasonalShare: 40,
-        dairyConsumption: 'moderate'
+        dairyConsumption: 'moderate',
+        diningOutDeliveryFrequency: 'weekly'
       },
       shopping: {
         clothingFrequency: 'seasonally',
@@ -78,7 +81,9 @@ export const PRESET_PROFILES: PresetProfile[] = [
         electricityKwhPerMonth: 190,
         cleanEnergyPercent: 40,
         cookingFuelType: 'piped_gas_png',
-        acUsageHoursPerDay: 4
+        acUsageHoursPerDay: 4,
+        acStarRating: 'inverter_5star',
+        waterHeatingType: 'instant_electric'
       },
       transport: {
         primaryMode: 'electric_scooter',
@@ -98,7 +103,8 @@ export const PRESET_PROFILES: PresetProfile[] = [
         dietType: 'eggetarian',
         foodWasteLevel: 'low',
         localSeasonalShare: 50,
-        dairyConsumption: 'low'
+        dairyConsumption: 'low',
+        diningOutDeliveryFrequency: 'rarely'
       },
       shopping: {
         clothingFrequency: 'seasonally',
@@ -132,7 +138,9 @@ export const PRESET_PROFILES: PresetProfile[] = [
         electricityKwhPerMonth: 120,
         cleanEnergyPercent: 80,
         cookingFuelType: 'electric_induction',
-        acUsageHoursPerDay: 0
+        acUsageHoursPerDay: 0,
+        acStarRating: 'inverter_5star',
+        waterHeatingType: 'solar_water_heater'
       },
       transport: {
         primaryMode: 'train_metro',
@@ -152,7 +160,8 @@ export const PRESET_PROFILES: PresetProfile[] = [
         dietType: 'vegan',
         foodWasteLevel: 'low',
         localSeasonalShare: 75,
-        dairyConsumption: 'low'
+        dairyConsumption: 'low',
+        diningOutDeliveryFrequency: 'rarely'
       },
       shopping: {
         clothingFrequency: 'rarely',
@@ -186,7 +195,9 @@ export const PRESET_PROFILES: PresetProfile[] = [
         electricityKwhPerMonth: 750,
         cleanEnergyPercent: 0,
         cookingFuelType: 'lpg_cylinder',
-        acUsageHoursPerDay: 12
+        acUsageHoursPerDay: 12,
+        acStarRating: 'non_inverter_standard',
+        waterHeatingType: 'electric_storage_geyser'
       },
       transport: {
         primaryMode: 'petrol_car',
@@ -206,7 +217,8 @@ export const PRESET_PROFILES: PresetProfile[] = [
         dietType: 'non_veg_daily',
         foodWasteLevel: 'high',
         localSeasonalShare: 15,
-        dairyConsumption: 'high'
+        dairyConsumption: 'high',
+        diningOutDeliveryFrequency: 'daily'
       },
       shopping: {
         clothingFrequency: 'frequently',

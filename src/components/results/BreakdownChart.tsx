@@ -19,21 +19,33 @@ const CATEGORY_ICONS: Record<CategoryKey, React.ComponentType<{ className?: stri
 };
 
 export const BreakdownChart: React.FC<BreakdownChartProps> = ({ result }) => {
+  const categoryList = result?.categoryList || [];
+  const categories = result?.categories || ({} as Record<CategoryKey, CategoryResult>);
+
   const [selectedCategoryKey, setSelectedCategoryKey] = useState<CategoryKey>(
-    result.categoryList[0]?.category || 'home'
+    categoryList[0]?.category || 'home'
   );
 
-  const selectedCategory: CategoryResult = 
-    result.categories[selectedCategoryKey] || result.categoryList[0];
+  const defaultCategory: CategoryResult = categoryList[0] || {
+    category: 'home' as CategoryKey,
+    label: 'Home & Electricity',
+    icon: 'Home',
+    tonnes: 0,
+    percentage: 0,
+    score: 100,
+    color: '#10b981',
+    contributors: []
+  };
 
-  const IconComponent = CATEGORY_ICONS[selectedCategory.category] || Home;
+  const selectedCategory: CategoryResult = categories[selectedCategoryKey] || defaultCategory;
+  const IconComponent = CATEGORY_ICONS[selectedCategory?.category] || Home;
 
   // Compute SVG Donut segments
-  const total = Math.max(0.01, result.totalTonnes);
+  const total = Math.max(0.01, Number(result?.totalTonnes) || 0.01);
   let accumulatedAngle = 0;
 
-  const segments = result.categoryList.map(cat => {
-    const fraction = cat.tonnes / total;
+  const segments = categoryList.map(cat => {
+    const fraction = (Number(cat.tonnes) || 0) / total;
     const angle = fraction * 360;
     const startAngle = accumulatedAngle;
     accumulatedAngle += angle;
@@ -52,6 +64,7 @@ export const BreakdownChart: React.FC<BreakdownChartProps> = ({ result }) => {
 
   // SVG arc path helper
   const describeArc = (x: number, y: number, radius: number, startAngle: number, endAngle: number) => {
+    if (isNaN(startAngle) || isNaN(endAngle) || endAngle <= startAngle) return '';
     const startRad = ((startAngle - 90) * Math.PI) / 180.0;
     const endRad = ((endAngle - 90) * Math.PI) / 180.0;
 
@@ -103,7 +116,9 @@ export const BreakdownChart: React.FC<BreakdownChartProps> = ({ result }) => {
               {segments.map(seg => {
                 if (seg.angle <= 0.5) return null;
                 const isSelected = selectedCategoryKey === seg.category;
-                const arcPath = describeArc(120, 120, 85, seg.startAngle, Math.min(seg.endAngle, seg.startAngle + seg.angle - 1.5));
+                const endAngle = Math.max(seg.startAngle + 0.5, seg.startAngle + seg.angle - (seg.angle > 3 ? 1.5 : 0));
+                const arcPath = describeArc(120, 120, 85, seg.startAngle, Math.min(seg.endAngle, endAngle));
+                if (!arcPath) return null;
 
                 return (
                   <path
@@ -180,7 +195,7 @@ export const BreakdownChart: React.FC<BreakdownChartProps> = ({ result }) => {
               Primary Contributor Breakdown:
             </div>
             
-            {selectedCategory.contributors.map(item => (
+            {(selectedCategory?.contributors || []).map(item => (
               <div
                 key={item.name}
                 className="p-3 rounded-xl bg-[#070c09] border border-emerald-950/70 flex items-center justify-between gap-3 text-xs"
