@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Ecolyse — Premium Carbon Footprint Calculator & Climate Awareness Platform</title>
+    <meta name="description" content="Understand your impact. Change your footprint. Measure everyday lifestyle emissions with high scientific precision, explore interactive climate data, simulate behavioral shifts, and build a personalized decarbonization plan." />
+    
+    <!-- Open Graph / Meta -->
+    <meta property="og:title" content="Ecolyse — Understand your impact. Change your footprint." />
+    <meta property="og:description" content="A real-time, interactive carbon footprint calculator and environmental awareness platform built for Environmental Studies." />
+    <meta property="og:type" content="website" />
+
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Anti-FOUC theme detector -->
+    <script>
+      (function() {
+        try {
+          const stored = localStorage.getItem('ecolyse_theme') || localStorage.getItem('carbonzero_theme');
+          if (stored === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+          } else {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body class="antialiased selection:bg-emerald-500/20 selection:text-emerald-300">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
