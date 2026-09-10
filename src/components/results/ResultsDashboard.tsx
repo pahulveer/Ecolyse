@@ -63,6 +63,13 @@ export const ResultsDashboard: React.FC = () => {
 
   const [shareModalOpen, setShareModalOpen] = useState(false);
 
+  // Guarantee user lands at the top of results to immediately see their footprint score
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, []);
+
   if (!calculationResult || !calculationResult.categoryList) {
     return (
       <div className="min-h-[50vh] flex flex-col items-center justify-center p-8 text-center text-zinc-400">

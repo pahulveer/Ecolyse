@@ -88,6 +88,15 @@ export const CalculatorWizard: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentStepIndex, isLastStep]);
 
+  // Ensure screen is pinned to top when calculation begins
+  useEffect(() => {
+    if (isCalculating) {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }
+  }, [isCalculating]);
+
   if (isCalculating) {
     return (
       <motion.div

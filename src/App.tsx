@@ -45,7 +45,9 @@ const AppContent: React.FC = () => {
   const isHome = view === 'home';
 
   React.useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
   }, [view]);
 
   return (
@@ -53,7 +55,7 @@ const AppContent: React.FC = () => {
       <div>
         <Navbar />
         <main className="w-full overflow-x-hidden">
-          <AnimatePresence initial={false}>
+          <AnimatePresence mode="wait" initial={false}>
             {view === 'home' && (
               <motion.div key="home" variants={pageFade} initial="initial" animate="animate" exit="exit">
                 <LandingPage />

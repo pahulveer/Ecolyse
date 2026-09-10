@@ -151,6 +151,9 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       setState(preset.data);
       setWhatIfOverrides(DEFAULT_WHAT_IF_OVERRIDES);
       setView('results');
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
     }
   };
 
@@ -171,12 +174,18 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const completeAssessment = () => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
     setIsCalculating(true);
+
     // Smooth cinematic calculation transition
     setTimeout(() => {
       setView('results');
       setIsCalculating(false);
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
     }, 900);
   };
 
