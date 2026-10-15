@@ -40,7 +40,7 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
 
   return (
     <motion.div
-      whileHover={{ scale: 1.005, y: -1 }}
+      whileHover={{ y: -1 }}
       transition={springSmooth}
       className={`rounded-2xl p-5 sm:p-6 transition-all duration-200 ${
         isLight
@@ -97,8 +97,8 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   whileHover={{
-                    scale: 1.03,
-                    y: -4,
+                    scale: 1.02,
+                    y: -3,
                     boxShadow: isLight
                       ? isSelected
                         ? '0 12px 28px -4px rgba(5,150,105,0.25), 0 0 0 1px rgba(5,150,105,0.4)'
@@ -115,7 +115,7 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
                     mass: 0.8,
                     delay: idx * 0.03,
                   }}
-                  className={`relative flex items-start gap-3.5 p-4 rounded-xl border text-left group focus:outline-none transition-all duration-200 overflow-hidden ${
+                  className={`relative flex items-start gap-3.5 p-4 rounded-xl border text-left group focus:outline-none transition-all duration-200 overflow-hidden cursor-pointer ${
                     isLight
                       ? isSelected
                         ? 'bg-emerald-50/80 border-emerald-500 shadow-sm ring-2 ring-emerald-500/30'
@@ -128,7 +128,7 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
                   {/* Icon */}
                   {IconComponent && (
                     <motion.div
-                      animate={isSelected ? { scale: [1, 1.25, 1], rotate: [0, -8, 8, 0] } : { scale: 1, rotate: 0 }}
+                      animate={isSelected ? { scale: [1, 1.15, 1], rotate: [0, -8, 8, 0] } : { scale: 1, rotate: 0 }}
                       transition={{ type: 'spring', stiffness: 400, damping: 18 }}
                       className={`p-2.5 rounded-lg shrink-0 mt-0.5 transition-colors ${
                         isLight
@@ -263,7 +263,7 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.85 }}
                 transition={springPop}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors disabled:opacity-30 ${
+                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors disabled:opacity-30 cursor-pointer ${
                   isLight
                     ? 'bg-white text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 shadow-sm border border-slate-200'
                     : 'bg-zinc-900 hover:bg-emerald-950 hover:text-emerald-300 text-zinc-300'
@@ -295,7 +295,7 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.85 }}
                 transition={springPop}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors disabled:opacity-30 ${
+                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors disabled:opacity-30 cursor-pointer ${
                   isLight
                     ? 'bg-white text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 shadow-sm border border-slate-200'
                     : 'bg-zinc-900 hover:bg-emerald-950 hover:text-emerald-300 text-zinc-300'

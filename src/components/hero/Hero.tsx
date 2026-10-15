@@ -15,7 +15,7 @@ const headlineContainer = {
 };
 
 const headlineWord = {
-  initial: { opacity: 0, y: 28 },
+  initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0, transition: springSmooth },
 };
 
@@ -24,11 +24,11 @@ export const Hero: React.FC = () => {
   const { scrollY } = useScroll();
 
   // Multi-plane 3D spring-damped scroll parallax
-  const smoothScrollY = useSpring(scrollY, { stiffness: 120, damping: 28 });
-  const leftCardY = useTransform(smoothScrollY, [0, 700], [0, -85]);
-  const leftCardRotate = useTransform(smoothScrollY, [0, 700], [0, -3.5]);
-  const rightCardY = useTransform(smoothScrollY, [0, 700], [0, -115]);
-  const rightCardRotate = useTransform(smoothScrollY, [0, 700], [0, 3.5]);
+  const smoothScrollY = useSpring(scrollY, { stiffness: 120, damping: 32 });
+  const leftCardY = useTransform(smoothScrollY, [0, 700], [0, -60]);
+  const leftCardRotate = useTransform(smoothScrollY, [0, 700], [0, -2]);
+  const rightCardY = useTransform(smoothScrollY, [0, 700], [0, -80]);
+  const rightCardRotate = useTransform(smoothScrollY, [0, 700], [0, 2]);
 
   const globeScale = useTransform(smoothScrollY, [0, 700], [1, 0.9]);
   const globeY = useTransform(smoothScrollY, [0, 700], [0, 40]);
@@ -182,7 +182,7 @@ export const Hero: React.FC = () => {
           >
             <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Scroll</span>
             <motion.div
-              animate={{ y: [0, 5, 0] }}
+              animate={{ y: [0, 3, 0] }}
               transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
               className="w-px h-8 bg-gradient-to-b from-emerald-500/40 to-transparent"
             />

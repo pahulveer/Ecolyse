@@ -29,9 +29,9 @@ const SectionReveal: React.FC<{
   className?: string;
 }> = ({ children, delay = 0, className }) => (
   <motion.div
-    initial={{ opacity: 0, y: 40 }}
+    initial={{ opacity: 0, y: 28 }}
     whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: '-80px' }}
+    viewport={{ once: true, margin: '-100px' }}
     transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94], delay }}
     className={className}
   >
@@ -42,12 +42,20 @@ const SectionReveal: React.FC<{
 // ──────────────────────────────────────────────────────────
 // Section label pill
 // ──────────────────────────────────────────────────────────
-const SectionLabel: React.FC<{ icon: React.ReactNode; text: string }> = ({ icon, text }) => (
-  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-500/20 text-emerald-400 text-xs font-mono uppercase tracking-wider shadow-sm">
-    {icon}
-    <span>{text}</span>
-  </div>
-);
+const SectionLabel: React.FC<{ icon: React.ReactNode; text: string }> = ({ icon, text }) => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
+  return (
+    <div className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-mono uppercase tracking-wider shadow-xs ${
+      isLight 
+        ? 'bg-emerald-100/80 border-emerald-300 text-emerald-800 font-semibold' 
+        : 'bg-emerald-950/60 border-emerald-500/20 text-emerald-400'
+    }`}>
+      {icon}
+      <span>{text}</span>
+    </div>
+  );
+};
 
 // ──────────────────────────────────────────────────────────
 // Stat card (for climate context section)
@@ -82,7 +90,7 @@ const StatCard: React.FC<{
   return (
     <SectionReveal delay={delay}>
       <motion.div
-        whileHover={{ y: -6, scale: 1.02 }}
+        whileHover={{ y: -4, scale: 1.01 }}
         transition={springSmooth}
         className={`p-7 rounded-3xl border transition-all duration-300 shadow-lg space-y-4 h-full relative overflow-hidden group ${
           isLight
@@ -90,11 +98,10 @@ const StatCard: React.FC<{
             : 'bg-[#09130e]/90 border-white/5 hover:border-emerald-500/30'
         }`}
       >
-        {/* Continuous 60fps kinetic traveling shimmer beam across top */}
-        <motion.div
-          animate={{ x: ['-100%', '200%'] }}
-          transition={{ repeat: Infinity, duration: 4.5, ease: 'linear', delay }}
-          className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-400/80 to-transparent pointer-events-none"
+        {/* GPU-composited CSS shimmer beam across top */}
+        <div
+          className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-400/80 to-transparent pointer-events-none animate-shimmer"
+          style={{ animationDelay: `${delay}s` }}
         />
 
         <div className="flex items-center justify-between">
@@ -212,7 +219,7 @@ export const LandingPage: React.FC = () => {
                   whileHover={{ y: -6, scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
                   transition={springPop}
-                  className={`w-full h-full p-5 rounded-3xl border transition-all text-left group relative overflow-hidden shadow-sm hover:shadow-xl ${
+                  className={`w-full h-full p-5 rounded-3xl border transition-all text-left group relative overflow-hidden shadow-sm hover:shadow-xl cursor-pointer ${
                     isLight
                       ? 'bg-white border-slate-200 hover:border-emerald-400'
                       : 'bg-[#09130e] border-white/5 hover:border-emerald-500/40'
@@ -238,7 +245,7 @@ export const LandingPage: React.FC = () => {
                     </span>
                   </div>
 
-                  <h3 className={`text-sm font-bold group-hover:text-emerald-400 transition-colors mb-1.5 ${
+                  <h3 className={`text-sm font-bold font-heading group-hover:text-emerald-500 transition-colors mb-1.5 ${
                     isLight ? 'text-slate-900' : 'text-white'
                   }`}>
                     {step.title}
@@ -274,7 +281,7 @@ export const LandingPage: React.FC = () => {
       <section className="py-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-16">
         <SectionReveal className="text-center max-w-2xl mx-auto space-y-4">
           <SectionLabel icon={<CheckCircle2 className="w-3.5 h-3.5" />} text="System Architecture" />
-          <h2 className={`text-3xl sm:text-4xl font-black tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
+          <h2 className={`text-3xl sm:text-4xl font-black font-heading tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
             How Ecolyse works
           </h2>
           <p className={`text-sm leading-relaxed ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>
@@ -303,10 +310,10 @@ export const LandingPage: React.FC = () => {
             <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
 
             <div className="relative z-10 space-y-5">
-              <p className="text-xs font-mono text-emerald-400 uppercase tracking-[0.2em] font-semibold">
+              <p className="text-xs font-mono text-emerald-500 uppercase tracking-[0.2em] font-semibold">
                 Ready to begin?
               </p>
-              <h2 className={`text-3xl sm:text-4xl font-black tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
+              <h2 className={`text-3xl sm:text-4xl font-black font-heading tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
                 Take the 3-minute assessment
               </h2>
               <p className={`text-sm max-w-lg mx-auto leading-relaxed ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>
@@ -318,7 +325,7 @@ export const LandingPage: React.FC = () => {
                 whileHover={{ scale: 1.05, y: -3, boxShadow: '0 22px 50px -10px rgba(52,211,153,0.48)' }}
                 whileTap={{ scale: 0.96 }}
                 transition={springPop}
-                className="mt-3 inline-flex items-center gap-2.5 px-8 py-4 rounded-xl font-bold text-sm text-white bg-emerald-600 hover:bg-emerald-500 transition-colors shadow-xl shadow-emerald-600/30"
+                className="mt-3 inline-flex items-center gap-2.5 px-8 py-4 rounded-xl font-bold text-sm text-white bg-emerald-600 hover:bg-emerald-500 transition-colors shadow-xl shadow-emerald-600/30 cursor-pointer"
               >
                 <span>Start Free Calculator</span>
                 <ArrowRight className="w-4 h-4" />

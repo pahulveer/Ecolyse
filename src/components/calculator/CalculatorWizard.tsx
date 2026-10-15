@@ -10,11 +10,11 @@ import { springPop, springSmooth } from '../common/MotionPrimitives';
 
 // Direction-aware step transition variants
 const stepVariants = {
-  enterForward: { opacity: 0, x: 60, scale: 0.97, filter: 'blur(3px)' },
-  enterBack:    { opacity: 0, x: -60, scale: 0.97, filter: 'blur(3px)' },
+  enterForward: { opacity: 0, x: 40, scale: 0.97, filter: 'blur(2px)' },
+  enterBack:    { opacity: 0, x: -40, scale: 0.97, filter: 'blur(2px)' },
   center:  { opacity: 1, x: 0, scale: 1, filter: 'blur(0px)', transition: { ...springSmooth, opacity: { duration: 0.25 } } },
-  exitForward:  { opacity: 0, x: -50, scale: 0.97, filter: 'blur(2px)', transition: { duration: 0.18, ease: [0.4,0,1,1] as any } },
-  exitBack:     { opacity: 0, x: 50, scale: 0.97, filter: 'blur(2px)', transition: { duration: 0.18, ease: [0.4,0,1,1] as any } },
+  exitForward:  { opacity: 0, x: -40, scale: 0.97, filter: 'blur(1px)', transition: { duration: 0.18, ease: [0.4,0,1,1] as any } },
+  exitBack:     { opacity: 0, x: 40, scale: 0.97, filter: 'blur(1px)', transition: { duration: 0.18, ease: [0.4,0,1,1] as any } },
 };
 
 const cardReveal = {
@@ -111,7 +111,13 @@ export const CalculatorWizard: React.FC = () => {
             transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
             className="absolute inset-0 rounded-full border-4 border-emerald-500/40"
           />
-          <div className="w-16 h-16 rounded-full border-4 border-emerald-400 border-t-transparent animate-spin" />
+          <div className="w-16 h-16 rounded-full border-4 border-emerald-400 border-t-transparent" >
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              className="w-full h-full rounded-full border-4 border-transparent border-t-emerald-400"
+            />
+          </div>
           <Sparkles className="w-6 h-6 text-emerald-300 absolute" />
         </div>
         <motion.h2
@@ -185,17 +191,15 @@ export const CalculatorWizard: React.FC = () => {
             variants={cardReveal}
             initial="initial"
             animate="animate"
-            className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0a140f]/90 border border-emerald-500/30 rounded-2xl p-6 shadow-xl backdrop-blur-md relative overflow-hidden group"
+            className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-[#0a140f]/90 border border-slate-200 dark:border-emerald-500/30 rounded-2xl p-6 shadow-md dark:shadow-xl backdrop-blur-md relative overflow-hidden group"
           >
-            {/* Continuous 60fps kinetic traveling light beam */}
-            <motion.div
-              animate={{ x: ['-100%', '200%'] }}
-              transition={{ repeat: Infinity, duration: 4.5, ease: 'linear' }}
-              className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent pointer-events-none"
+            {/* GPU-composited CSS shimmer beam */}
+            <div
+              className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent pointer-events-none animate-shimmer"
             />
 
             <div>
-              <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 uppercase tracking-wider mb-1">
+              <div className="flex items-center gap-2 text-xs font-mono text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1 font-semibold">
                 <span className="relative flex h-1.5 w-1.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
@@ -204,19 +208,19 @@ export const CalculatorWizard: React.FC = () => {
                 <span>•</span>
                 <span>{currentStep.shortLabel}</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-heading">
                 {currentStep.title}
               </h2>
-              <p className="text-sm text-zinc-400 mt-1 max-w-xl">
+              <p className="text-sm text-slate-600 dark:text-zinc-400 mt-1 max-w-xl">
                 {currentStep.tagline}
               </p>
             </div>
 
             {/* Running impact readout — right side with kinetic spring counter */}
-            <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-emerald-950/60 border border-emerald-500/35 self-start sm:self-center shrink-0 shadow-lg">
+            <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-500/35 self-start sm:self-center shrink-0 shadow-sm dark:shadow-lg">
               <div className="text-right">
-                <div className="flex items-center gap-1.5 justify-end text-[10px] text-zinc-400 uppercase font-mono font-semibold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <div className="flex items-center gap-1.5 justify-end text-[10px] text-slate-500 dark:text-zinc-400 uppercase font-mono font-semibold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   <span>Real-Time Baseline</span>
                 </div>
                 <motion.div 
@@ -224,10 +228,10 @@ export const CalculatorWizard: React.FC = () => {
                   initial={{ scale: 0.85, opacity: 0.8 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={springPop}
-                  className="text-lg font-bold font-mono text-emerald-300"
+                  className="text-lg font-bold font-mono text-emerald-700 dark:text-emerald-300"
                 >
                   {calculationResult.totalTonnes}{' '}
-                  <span className="text-xs font-normal text-zinc-400">t CO₂e</span>
+                  <span className="text-xs font-normal text-slate-500 dark:text-zinc-400">t CO₂e</span>
                 </motion.div>
               </div>
             </div>
@@ -261,7 +265,7 @@ export const CalculatorWizard: React.FC = () => {
           </motion.div>
 
           {/* Wizard Footer Controls */}
-          <div className="mt-10 pt-6 border-t border-emerald-950/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="mt-10 pt-6 border-t border-slate-200 dark:border-emerald-950/80 flex flex-col sm:flex-row items-center justify-between gap-4">
             
             {/* Navigation & Reset Buttons */}
             <div className="flex items-center gap-2.5 w-full sm:w-auto">
@@ -279,7 +283,7 @@ export const CalculatorWizard: React.FC = () => {
                     }}
                     whileHover={{ scale: 1.03, x: -2 }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-semibold text-zinc-300 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/50 transition-colors"
+                    className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-semibold text-slate-700 dark:text-zinc-300 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-900/80 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-700/50 transition-colors cursor-pointer"
                   >
                     <ArrowLeft className="w-4 h-4" />
                     <span>Previous Step</span>
@@ -296,17 +300,17 @@ export const CalculatorWizard: React.FC = () => {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.95 }}
                 transition={springPop}
-                className={`flex items-center gap-1.5 px-3.5 py-3 rounded-xl text-xs font-medium transition-all duration-200 border ${
+                className={`flex items-center gap-1.5 px-3.5 py-3 rounded-xl text-xs font-medium transition-all duration-200 border cursor-pointer ${
                   confirmingReset
-                    ? 'bg-rose-950/60 border-rose-500 text-rose-300 shadow-sm animate-pulse'
-                    : 'text-zinc-400 hover:text-zinc-200 bg-zinc-900/50 hover:bg-zinc-800/80 border-zinc-800/80 hover:border-zinc-700'
+                    ? 'bg-rose-50 dark:bg-rose-950/60 border-rose-400 dark:border-rose-500 text-rose-700 dark:text-rose-300 shadow-sm animate-pulse'
+                    : 'text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200 bg-slate-100 dark:bg-zinc-900/50 hover:bg-slate-200 dark:hover:bg-zinc-800/80 border-slate-200 dark:border-zinc-800/80 hover:border-slate-300 dark:hover:border-zinc-700'
                 }`}
                 title={confirmingReset ? 'Click again to confirm reset' : 'Reset all inputs to baseline defaults'}
               >
                 {confirmingReset ? (
                   <>
-                    <AlertCircle className="w-3.5 h-3.5 text-rose-400" />
-                    <span className="font-semibold text-rose-300">Confirm Reset?</span>
+                    <AlertCircle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+                    <span className="font-semibold text-rose-700 dark:text-rose-300">Confirm Reset?</span>
                   </>
                 ) : (
                   <>
@@ -318,8 +322,8 @@ export const CalculatorWizard: React.FC = () => {
             </div>
 
             {/* Keyboard Hint */}
-            <span className="hidden sm:inline-block text-[11px] font-mono text-zinc-400">
-              Press <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700 text-[10px]">Enter ↵</kbd> to proceed
+            <span className="hidden sm:inline-block text-[11px] font-mono text-slate-500 dark:text-zinc-400">
+              Press <kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-300 dark:border-zinc-700 text-[10px]">Enter ↵</kbd> to proceed
             </span>
 
             {/* Next / Complete Button */}
@@ -332,11 +336,11 @@ export const CalculatorWizard: React.FC = () => {
               whileHover={{
                 scale: 1.04,
                 y: -2,
-                boxShadow: '0 14px 36px -6px rgba(52,211,153,0.5)',
+                boxShadow: '0 14px 36px -6px rgba(16,185,129,0.4)',
               }}
               whileTap={{ scale: 0.95 }}
               transition={springPop}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm text-carbon-950 bg-emerald-400 hover:bg-emerald-300 transition-colors shadow-lg shadow-emerald-500/20"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm text-white dark:text-carbon-950 bg-emerald-600 hover:bg-emerald-500 dark:bg-emerald-400 dark:hover:bg-emerald-300 transition-colors shadow-lg shadow-emerald-600/20 dark:shadow-emerald-500/20 cursor-pointer"
             >
               <span>{isLastStep ? 'Complete & View Footprint' : 'Next Category'}</span>
               {isLastStep ? <CheckCircle2 className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}

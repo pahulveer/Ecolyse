@@ -31,21 +31,21 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
         className="flex items-center justify-between mb-3 px-1 text-xs"
       >
         <div className="flex items-center gap-2">
-          <span className="font-mono text-emerald-400 font-semibold uppercase tracking-wider">
+          <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider">
             STEP 0{currentStepIndex + 1} OF 07
           </span>
-          <span className="text-zinc-500">•</span>
-          <span className="font-medium text-zinc-300">
+          <span className="text-slate-400 dark:text-zinc-600">•</span>
+          <span className="font-semibold text-slate-800 dark:text-zinc-200 font-heading">
             {CALCULATOR_STEPS[currentStepIndex]?.title}
           </span>
         </div>
-        <span className="font-mono text-xs text-zinc-400">
+        <span className="font-mono text-xs font-semibold text-slate-500 dark:text-zinc-400">
           {Math.round(progressPercent)}% Complete
         </span>
       </motion.div>
 
       {/* Smooth continuous progress bar track — spring-animated fill */}
-      <div className="h-1.5 w-full bg-emerald-950/60 rounded-full overflow-hidden mb-6 border border-emerald-900/30">
+      <div className="h-2 w-full bg-slate-200 dark:bg-emerald-950/60 rounded-full overflow-hidden mb-6 border border-slate-300/60 dark:border-emerald-900/30 shadow-inner">
         <motion.div
           className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full"
           animate={{ width: `${progressPercent}%` }}
@@ -68,18 +68,18 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
                 onSelectStep(idx);
               }}
               whileHover={{
-                scale: 1.08,
-                y: -4,
+                scale: 1.04,
+                y: -2,
                 boxShadow: isCurrent
-                  ? '0 12px 28px -4px rgba(52,211,153,0.45)'
-                  : '0 10px 24px -4px rgba(16,185,129,0.25)',
+                  ? '0 12px 28px -4px rgba(16,185,129,0.35)'
+                  : '0 10px 24px -4px rgba(16,185,129,0.18)',
               }}
-              whileTap={{ scale: 0.92 }}
+              whileTap={{ scale: 0.94 }}
               transition={{ type: 'spring', stiffness: 350, damping: 22 }}
-              className={`relative flex flex-col items-center p-2.5 rounded-xl border transition-all duration-200 text-center group ${
+              className={`relative flex flex-col items-center p-2.5 rounded-2xl border transition-all duration-200 text-center group cursor-pointer ${
                 isLight
                   ? isCurrent
-                    ? 'bg-emerald-50 border-emerald-500 shadow-sm text-emerald-800 ring-2 ring-emerald-500/20'
+                    ? 'bg-emerald-50 border-emerald-500 shadow-sm text-emerald-900 ring-2 ring-emerald-500/20'
                     : isCompleted
                       ? 'bg-white border-emerald-200 text-slate-700 hover:border-emerald-400 hover:bg-emerald-50/40'
                       : 'bg-white/70 border-slate-200 text-slate-400 hover:border-slate-300 hover:text-slate-600'
@@ -178,7 +178,7 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
                         ? 'rgb(16 185 129 / 0.5)'
                         : 'rgb(39 39 42)',
                 }}
-                transition={{ type: 'spring', stiffness: 200, damping: 22 }}
+                transition={{ type: 'spring', stiffness: 200, damping: 26 }}
                 className="h-2.5 rounded-full"
               />
             </motion.button>

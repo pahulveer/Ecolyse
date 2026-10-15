@@ -43,9 +43,9 @@ export const Navbar: React.FC = () => {
 
   return (
     <header 
-      className={`sticky top-0 z-50 transition-all duration-300 ${
+      className={`sticky top-0 z-50 transition-all duration-500 ease-out ${
         isScrolled 
-          ? 'py-2.5 bg-[#070c09]/85 backdrop-blur-md border-b border-emerald-900/30 shadow-lg shadow-black/20' 
+          ? 'py-2 mt-2 mx-3 sm:mx-4 lg:mx-auto max-w-6xl rounded-2xl bg-white/90 dark:bg-[#070c09]/90 backdrop-blur-xl border border-emerald-600/15 dark:border-emerald-900/30 shadow-lg shadow-emerald-950/[0.04] dark:shadow-black/40' 
           : 'py-4 bg-transparent border-b border-transparent'
       }`}
     >
@@ -55,38 +55,38 @@ export const Navbar: React.FC = () => {
           {/* Brand Logo */}
           <motion.button 
             onClick={() => { setView('home'); setMobileMenuOpen(false); }}
-            whileHover={{ scale: 1.03 }}
+            whileHover={{ y: -1 }}
             whileTap={{ scale: 0.97 }}
-            transition={springPop}
-            className="flex items-center gap-3 text-left group focus:outline-none"
+            transition={springSmooth}
+            className="flex items-center gap-3 text-left group focus:outline-none cursor-pointer"
           >
-            <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/30 flex items-center justify-center group-hover:border-emerald-400/60 transition-all duration-300">
+            <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/30 flex items-center justify-center group-hover:border-emerald-400/60 transition-all duration-300 shadow-sm">
               <motion.div
                 whileHover={{ rotate: 20 }}
                 transition={springPop}
               >
-                <Globe2 className="w-5 h-5 text-emerald-400" />
+                <Globe2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               </motion.div>
               <div className="absolute inset-0 rounded-xl bg-emerald-400/10 blur-sm opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-extrabold tracking-wider text-lg bg-gradient-to-r from-emerald-300 via-emerald-100 to-teal-200 bg-clip-text text-transparent">
+                <span className="font-extrabold tracking-wider text-lg font-heading bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 dark:from-emerald-300 dark:via-emerald-100 dark:to-teal-200 bg-clip-text text-transparent">
                   ECOLYSE
                 </span>
-                <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 font-bold">
                   LCA v2.4
                 </span>
               </div>
-              <p className="text-[11px] text-emerald-100/50 -mt-0.5 tracking-tight font-sans">
+              <p className="text-[11px] text-slate-500 dark:text-emerald-100/50 -mt-0.5 tracking-tight font-sans">
                 Understand your impact. Change your footprint.
               </p>
             </div>
           </motion.button>
 
-          {/* Desktop Navigation Links — with layoutId active indicator */}
+          {/* Desktop Navigation Links — Matching Website Eco Theme */}
           <LayoutGroup>
-            <nav className="hidden md:flex items-center gap-1 bg-carbon-900/40 border border-emerald-950/60 rounded-full px-3 py-1.5 backdrop-blur-md">
+            <nav className="hidden md:flex items-center gap-1 bg-emerald-950/[0.04] dark:bg-[#0c1611]/90 border border-emerald-600/20 dark:border-emerald-500/20 rounded-full px-2.5 py-1.5 backdrop-blur-xl shadow-sm shadow-emerald-950/5 dark:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.5)]">
               {navLinks.map(link => {
                 const isActive = view === link.view;
                 return (
@@ -96,25 +96,31 @@ export const Navbar: React.FC = () => {
                       playSelectSound();
                       setView(link.view);
                     }}
-                    whileHover={{ scale: 1.06 }}
-                    whileTap={{ scale: 0.94 }}
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.96 }}
                     transition={springPop}
-                    className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                    className={`group relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer ${
                       isActive 
-                        ? 'text-emerald-200' 
-                        : 'text-zinc-400 hover:text-zinc-100'
+                        ? 'text-white font-bold' 
+                        : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-emerald-500/10 dark:hover:bg-white/5'
                     }`}
                   >
-                    {/* Active pill background — slides between buttons */}
+                    {/* Active pill background — slides between buttons with solid, high-contrast eco fill */}
                     {isActive && (
                       <motion.div
                         layoutId="navbar-active-pill"
-                        className="absolute inset-0 rounded-full bg-emerald-500/15 border border-emerald-500/30 shadow-sm shadow-emerald-950"
-                        transition={springSmooth}
+                        className="absolute inset-0 rounded-full bg-emerald-600 dark:bg-emerald-600 shadow-md shadow-emerald-700/25 dark:shadow-emerald-950/80 border border-emerald-500/40"
+                        transition={{ type: 'spring', stiffness: 260, damping: 28 }}
                       />
                     )}
-                    <span className="relative z-10 flex items-center gap-1.5">
+                    <span className={`relative z-10 flex items-center gap-1.5 transition-colors ${
+                      isActive 
+                        ? 'text-white' 
+                        : 'text-slate-500 dark:text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-300'
+                    }`}>
                       {link.icon}
+                    </span>
+                    <span className="relative z-10">
                       {link.label}
                     </span>
                   </motion.button>
@@ -122,6 +128,7 @@ export const Navbar: React.FC = () => {
               })}
             </nav>
           </LayoutGroup>
+
           {/* Right Action Tools */}
           <div className="hidden lg:flex items-center gap-2.5">
 
@@ -130,10 +137,10 @@ export const Navbar: React.FC = () => {
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.94 }}
               transition={springPop}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-300 bg-zinc-900/50 hover:bg-zinc-800/60 border border-zinc-700/40 transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium text-emerald-950/90 dark:text-emerald-200/90 bg-emerald-50/70 hover:bg-emerald-100/80 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 border border-emerald-600/20 dark:border-emerald-800/40 transition-colors cursor-pointer"
               title="Enter full-screen classroom presentation deck"
             >
-              <Presentation className="w-3.5 h-3.5 text-teal-400" />
+              <Presentation className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
               <span>Presentation</span>
             </motion.button>
 
@@ -146,7 +153,7 @@ export const Navbar: React.FC = () => {
               whileHover={{ scale: 1.12, rotate: 15 }}
               whileTap={{ scale: 0.9, rotate: -15 }}
               transition={springPop}
-              className="p-2 rounded-lg text-zinc-400 hover:text-emerald-300 hover:bg-emerald-950/30 border border-zinc-800/60 transition-colors"
+              className="p-2 rounded-xl text-emerald-800/80 hover:text-emerald-700 dark:text-emerald-200/80 dark:hover:text-emerald-300 bg-emerald-50/60 hover:bg-emerald-100/70 dark:bg-emerald-950/30 dark:hover:bg-emerald-900/50 border border-emerald-600/15 dark:border-emerald-800/40 transition-colors cursor-pointer"
               title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
               aria-label="Toggle theme"
             >
@@ -169,7 +176,7 @@ export const Navbar: React.FC = () => {
                     exit={{ opacity: 0, rotate: -90, scale: 0.6 }}
                     transition={springSmooth}
                   >
-                    <Moon className="w-4 h-4 text-emerald-500" />
+                    <Moon className="w-4 h-4 text-emerald-600" />
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -181,7 +188,7 @@ export const Navbar: React.FC = () => {
               whileHover={{ scale: 1.12 }}
               whileTap={{ scale: 0.9 }}
               transition={springPop}
-              className="p-2 rounded-lg text-zinc-400 hover:text-emerald-300 hover:bg-emerald-950/30 border border-zinc-800/60 transition-colors"
+              className="p-2 rounded-xl text-emerald-800/80 hover:text-emerald-700 dark:text-emerald-200/80 dark:hover:text-emerald-300 bg-emerald-50/60 hover:bg-emerald-100/70 dark:bg-emerald-950/30 dark:hover:bg-emerald-900/50 border border-emerald-600/15 dark:border-emerald-800/40 transition-colors cursor-pointer"
               title={isMuted ? 'Unmute UI sound effects' : 'Mute UI sound effects'}
               aria-label="Toggle sound effects"
             >
@@ -194,7 +201,7 @@ export const Navbar: React.FC = () => {
                     exit={{ opacity: 0, scale: 0.6 }}
                     transition={springSmooth}
                   >
-                    <VolumeX className="w-4 h-4 text-zinc-500" />
+                    <VolumeX className="w-4 h-4 text-slate-400 dark:text-zinc-500" />
                   </motion.div>
                 ) : (
                   <motion.div
@@ -204,7 +211,7 @@ export const Navbar: React.FC = () => {
                     exit={{ opacity: 0, scale: 0.6 }}
                     transition={springSmooth}
                   >
-                    <Volume2 className="w-4 h-4 text-emerald-400" />
+                    <Volume2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -220,12 +227,12 @@ export const Navbar: React.FC = () => {
                   exit={{ opacity: 0, scale: 0.88 }}
                   transition={springSmooth}
                   onClick={() => setView('calculator')}
-                  whileHover={{ scale: 1.06, y: -2, boxShadow: '0 10px 28px -6px rgba(52,211,153,0.5)' }}
-                  whileTap={{ scale: 0.94 }}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-carbon-950 bg-emerald-400 hover:bg-emerald-300 transition-colors shadow-md shadow-emerald-500/20"
+                  whileHover={{ scale: 1.05, y: -2, boxShadow: '0 12px 28px -6px rgba(16,185,129,0.35)' }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white dark:text-carbon-950 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 dark:from-emerald-400 dark:to-emerald-300 dark:hover:from-emerald-300 dark:hover:to-emerald-200 transition-all shadow-md shadow-emerald-600/20 dark:shadow-emerald-500/20 cursor-pointer"
                 >
                   <Calculator className="w-3.5 h-3.5" />
-                  <span>Calculate My Footprint</span>
+                  <span>Calculate Footprint</span>
                 </motion.button>
               ) : (
                 <motion.button
@@ -235,11 +242,11 @@ export const Navbar: React.FC = () => {
                   exit={{ opacity: 0, scale: 0.88 }}
                   transition={springSmooth}
                   onClick={() => setView('results')}
-                  whileHover={{ scale: 1.05, y: -1 }}
-                  whileTap={{ scale: 0.94 }}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-emerald-300 bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-500/40 transition-colors"
+                  whileHover={{ scale: 1.04, y: -1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-emerald-800 dark:text-emerald-300 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-500/40 transition-colors cursor-pointer"
                 >
-                  <span>View Results Dashboard →</span>
+                  <span>View Results →</span>
                 </motion.button>
               )}
             </AnimatePresence>
@@ -252,15 +259,15 @@ export const Navbar: React.FC = () => {
               whileHover={{ scale: 1.1, rotate: 12 }}
               whileTap={{ scale: 0.9 }}
               transition={springPop}
-              className="p-2 rounded-lg text-zinc-400 hover:text-emerald-300"
+              className="p-2 rounded-xl text-emerald-800/80 hover:text-emerald-700 dark:text-emerald-200/80 dark:hover:text-emerald-300 cursor-pointer"
               aria-label="Toggle theme"
             >
-              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-emerald-500" />}
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-emerald-600" />}
             </motion.button>
             <motion.button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               whileTap={{ scale: 0.92 }}
-              className="p-2 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-800/50"
+              className="p-2 rounded-xl text-emerald-950/80 dark:text-emerald-100/80 hover:text-emerald-600 dark:hover:text-emerald-300 hover:bg-emerald-500/10 cursor-pointer"
               aria-label="Open menu"
             >
               <AnimatePresence mode="wait" initial={false}>
@@ -299,32 +306,34 @@ export const Navbar: React.FC = () => {
               animate={{ opacity: 1, height: 'auto', y: 0 }}
               exit={{ opacity: 0, height: 0, y: -8 }}
               transition={{ type: 'spring', stiffness: 280, damping: 26 }}
-              className="md:hidden mt-3 pt-3 border-t border-emerald-900/40 pb-4 space-y-2 overflow-hidden"
+              className="md:hidden mt-3 pt-3 border-t border-emerald-600/15 dark:border-emerald-900/40 pb-4 space-y-2 overflow-hidden bg-white/95 dark:bg-[#070c09]/95 backdrop-blur-xl rounded-2xl p-4 shadow-xl border border-emerald-600/20 dark:border-emerald-950"
             >
               {navLinks.map((link, idx) => (
                 <motion.button
                   key={link.view}
                   initial={{ opacity: 0, x: -16 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ ...springSmooth, delay: idx * 0.06 }}
+                  transition={{ ...springSmooth, delay: idx * 0.08 }}
                   onClick={() => {
                     setView(link.view);
                     setMobileMenuOpen(false);
                   }}
                   whileHover={{ x: 6 }}
                   whileTap={{ scale: 0.97 }}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
                     view === link.view
-                      ? 'bg-emerald-500/20 text-emerald-300'
-                      : 'text-zinc-400 hover:bg-zinc-800/40 hover:text-white'
+                      ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-700/20'
+                      : 'text-slate-600 dark:text-zinc-400 hover:bg-emerald-500/10 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
-                  {link.icon}
+                  <span className={view === link.view ? 'text-white' : 'text-slate-400 dark:text-zinc-500'}>
+                    {link.icon}
+                  </span>
                   {link.label}
                 </motion.button>
               ))}
               
-              <div className="pt-2 border-t border-emerald-900/40">
+              <div className="pt-2 border-t border-emerald-600/15 dark:border-emerald-900/40">
                 <motion.button
                   initial={{ opacity: 0, x: -16 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -335,9 +344,9 @@ export const Navbar: React.FC = () => {
                   }}
                   whileHover={{ x: 4 }}
                   whileTap={{ scale: 0.96 }}
-                  className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium bg-zinc-900 text-zinc-300 border border-zinc-700/50"
+                  className="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-emerald-50 hover:bg-emerald-100/80 dark:bg-[#0c1611] text-emerald-900 dark:text-emerald-200 border border-emerald-600/20 dark:border-emerald-800/40 cursor-pointer"
                 >
-                  <Presentation className="w-3.5 h-3.5 text-teal-400" />
+                  <Presentation className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
                   <span>Presentation Mode</span>
                 </motion.button>
               </div>

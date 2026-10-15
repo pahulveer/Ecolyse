@@ -11,8 +11,8 @@ import { motion, type Variants, type MotionProps } from 'framer-motion';
 // (exported as plain objects — keep in same file but note Vite Fast Refresh
 //  only fully HMRs React component exports; constants are fine in practice)
 // ─────────────────────────────────────────────
-export const springPop = { type: 'spring', stiffness: 380, damping: 28 } as const;
-export const springSmooth = { type: 'spring', stiffness: 260, damping: 30 } as const;
+export const springPop = { type: 'spring', stiffness: 350, damping: 28 } as const;
+export const springSmooth = { type: 'spring', stiffness: 260, damping: 32 } as const;
 export const springGentle = { type: 'spring', stiffness: 180, damping: 26 } as const;
 export const easeFast = { duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] as const } as const;
 export const easeMedium = { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] as const } as const;
@@ -65,7 +65,7 @@ export const stepVariantsBack: Variants = {
 // FadeUp — staggered entrance for sections
 // ─────────────────────────────────────────────
 export const fadeUpVariants: Variants = {
-  initial: { opacity: 0, y: 28, scale: 0.98 },
+  initial: { opacity: 0, y: 20, scale: 0.98 },
   animate: { opacity: 1, y: 0, scale: 1, transition: springSmooth },
 };
 
@@ -143,7 +143,7 @@ export const staggerContainer: Variants = {
 };
 
 export const staggerItem: Variants = {
-  initial: { opacity: 0, y: 20, scale: 0.97 },
+  initial: { opacity: 0, y: 16, scale: 0.97 },
   animate: {
     opacity: 1,
     y: 0,
@@ -215,7 +215,7 @@ interface MotionCardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const MotionCard: React.FC<MotionCardProps> = ({
   children,
-  liftY = -4,
+  liftY = -3,
   ...rest
 }) => (
   <motion.div

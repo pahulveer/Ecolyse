@@ -3,6 +3,7 @@
 @layer base {
   :root {
     --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-heading: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
 
     /* Theme colors - Dark default */
@@ -44,12 +45,21 @@
     --accent-rose: #e11d48;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
     font-family: var(--font-sans);
     transition: background-color 0.25s ease, color 0.25s ease;
     overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, .font-heading {
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
   }
 }
 
@@ -59,7 +69,8 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-subtle);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
 }
 
 .glass-panel-interactive {
@@ -67,7 +78,8 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-subtle);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
 }
 
 .glass-panel-interactive:hover {
@@ -75,6 +87,15 @@
   border-color: var(--border-highlight);
   transform: translateY(-2px);
   box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.4), 0 0 20px -5px rgba(16, 185, 129, 0.15);
+}
+
+.glass-panel-elevated {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-highlight);
+  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.3), 0 0 24px -4px rgba(16, 185, 129, 0.12), inset 0 1px 0 rgba(255,255,255,0.05);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .glass-panel-active {
@@ -113,6 +134,7 @@
 ::-webkit-scrollbar-thumb {
   background: rgba(36, 68, 51, 0.6);
   border-radius: 4px;
+  transition: background-color 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -148,6 +170,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
   background: #34d399;
 }
 
+input[type="range"]:active::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2), 0 0 10px rgba(16, 185, 129, 0.6);
+}
+
 input[type="range"]::-moz-range-thumb {
   width: 20px;
   height: 20px;
@@ -156,6 +182,30 @@ input[type="range"]::-moz-range-thumb {
   cursor: pointer;
   border: 2px solid #070c09;
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+}
+
+/* Card Lift Utility */
+.card-lift {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.15), 0 0 16px -2px rgba(16, 185, 129, 0.1);
+}
+
+/* GPU-composited shimmer beam — replaces inline Framer Motion loops */
+@keyframes shimmer-travel {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+.animate-shimmer {
+  animation: shimmer-travel 4.5s linear infinite;
+  will-change: transform;
+}
+
+/* Tabular nums for counter stability */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
 
 /* Reduced motion preference */
@@ -177,7 +227,7 @@ input[type="range"]::-moz-range-thumb {
 
 /* 1. Page Background & Base Body */
 html.light body {
-  background-color: #f8fafc !important;
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%) !important;
   color: #0f172a !important;
 }
 

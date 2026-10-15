@@ -23,11 +23,11 @@ const cubicEase = [0.25, 0.46, 0.45, 0.94] as const;
 const pageFade: Variants = {
   initial: { opacity: 0 },
   animate: { opacity: 1, transition: { duration: 0.45, ease: cubicEase } },
-  exit:    { opacity: 0, transition: { duration: 0.22, ease: 'easeIn' } },
+  exit:    { opacity: 0, scale: 0.99, filter: 'blur(1px)', transition: { duration: 0.18, ease: 'easeIn' } },
 };
 
 const pageSlideUp: Variants = {
-  initial: { opacity: 0, y: 22 },
+  initial: { opacity: 0, y: 16 },
   animate: {
     opacity: 1,
     y: 0,
@@ -35,8 +35,10 @@ const pageSlideUp: Variants = {
   },
   exit: {
     opacity: 0,
-    y: -12,
-    transition: { duration: 0.2, ease: 'easeIn' },
+    y: -10,
+    scale: 0.99,
+    filter: 'blur(1px)',
+    transition: { duration: 0.16, ease: 'easeIn' },
   },
 };
 
@@ -55,7 +57,7 @@ const AppContent: React.FC = () => {
       <div>
         <Navbar />
         <main className="w-full overflow-x-hidden">
-          <AnimatePresence mode="wait" initial={false}>
+          <AnimatePresence mode="wait">
             {view === 'home' && (
               <motion.div key="home" variants={pageFade} initial="initial" animate="animate" exit="exit">
                 <LandingPage />
