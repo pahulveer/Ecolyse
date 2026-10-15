@@ -10,8 +10,9 @@ An interactive, scientifically calibrated personal carbon footprint calculator a
 [![Vite](https://img.shields.io/badge/Vite-8.2-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![License](https://img.shields.io/badge/License-MIT-emerald?style=flat-square)](#license)
+[![Live Demo](https://img.shields.io/badge/Demo-pahulveer.github.io%2FEcolyse-10b981?style=flat-square&logo=githubpages&logoColor=white)](https://pahulveer.github.io/Ecolyse/)
 
-[Key Features](#key-features) • [Methodology & Data](#scientific-methodology--data-sources) • [Tech Stack](#tech-stack) • [Getting Started](#getting-started) • [Contributing](#contributing)
+[🌐 **Live Demo**](https://pahulveer.github.io/Ecolyse/) • [Key Features](#key-features) • [Methodology & Data](#scientific-methodology--data-sources) • [Tech Stack](#tech-stack) • [Getting Started](#getting-started) • [Contributing](#contributing)
 
 ---
 

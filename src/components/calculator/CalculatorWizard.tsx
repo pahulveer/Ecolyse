@@ -106,18 +106,8 @@ export const CalculatorWizard: React.FC = () => {
         className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4"
       >
         <div className="relative w-24 h-24 mb-8 flex items-center justify-center">
-          <motion.div
-            animate={{ scale: [1, 1.4, 1], opacity: [0.4, 0.1, 0.4] }}
-            transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute inset-0 rounded-full border-4 border-emerald-500/40"
-          />
-          <div className="w-16 h-16 rounded-full border-4 border-emerald-400 border-t-transparent" >
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="w-full h-full rounded-full border-4 border-transparent border-t-emerald-400"
-            />
-          </div>
+          <div className="absolute inset-0 rounded-full border-4 border-emerald-500/30 animate-ping opacity-25" />
+          <div className="w-16 h-16 rounded-full border-4 border-emerald-400 border-t-transparent animate-spin" />
           <Sparkles className="w-6 h-6 text-emerald-300 absolute" />
         </div>
         <motion.h2

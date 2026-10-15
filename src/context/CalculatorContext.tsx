@@ -177,16 +177,8 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
-    setIsCalculating(true);
-
-    // Smooth cinematic calculation transition
-    setTimeout(() => {
-      setView('results');
-      setIsCalculating(false);
-      window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    }, 900);
+    setIsCalculating(false);
+    setView('results');
   };
 
   const toggleCommitAction = (id: string) => {

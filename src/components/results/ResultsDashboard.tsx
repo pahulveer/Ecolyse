@@ -16,6 +16,8 @@ import { WhatIfSimulator } from './WhatIfSimulator';
 import { FutureLandscape } from './FutureLandscape';
 import { ImpactScoreGauge } from './ImpactScoreGauge';
 import { ShareResultModal } from './ShareResultModal';
+import { DEFAULT_CALCULATOR_STATE } from '../../data/presets';
+import { calculateFootprint } from '../../utils/calculationEngine';
 import { springPop, springSmooth } from '../common/MotionPrimitives';
 
 // Immediate hero section wrapper
@@ -67,13 +69,12 @@ export const ResultsDashboard: React.FC = () => {
     document.body.scrollTop = 0;
   }, []);
 
-  if (!calculationResult || !calculationResult.categoryList) {
-    return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center p-8 text-center text-slate-500 dark:text-zinc-400">
-        <p className="text-sm">Preparing your carbon footprint calculations...</p>
-      </div>
-    );
-  }
+  const safeResult = React.useMemo(() => {
+    if (calculationResult && calculationResult.categoryList && calculationResult.categoryList.length > 0) {
+      return calculationResult;
+    }
+    return calculateFootprint(DEFAULT_CALCULATOR_STATE);
+  }, [calculationResult]);
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
@@ -137,22 +138,22 @@ export const ResultsDashboard: React.FC = () => {
 
       {/* 1. Footprint Big Counter & Benchmarks */}
       <HeroSection delay={0}>
-        <FootprintCounter result={calculationResult} />
+        <FootprintCounter result={safeResult} />
       </HeroSection>
 
       {/* 2. Biggest Impact Spotlight */}
       <HeroSection delay={0.06}>
-        <BiggestImpactCard biggestImpact={calculationResult.biggestImpact} />
+        <BiggestImpactCard biggestImpact={safeResult.biggestImpact} />
       </HeroSection>
 
       {/* 3. Interactive Category Breakdown Donut & Inspector */}
       <HeroSection delay={0.12}>
-        <BreakdownChart result={calculationResult} />
+        <BreakdownChart result={safeResult} />
       </HeroSection>
 
       {/* 4. Action Plan / Top 5 Recommendations */}
       <RevealSection>
-        <ActionPlanList recommendations={calculationResult.recommendations} />
+        <ActionPlanList recommendations={safeResult.recommendations} />
       </RevealSection>
 
       {/* 5. What-If Behavioral Simulator */}
@@ -162,12 +163,12 @@ export const ResultsDashboard: React.FC = () => {
 
       {/* 6. Ecological Health & Future Landscape Trajectory */}
       <RevealSection>
-        <FutureLandscape currentTonnes={calculationResult.totalTonnes} />
+        <FutureLandscape currentTonnes={safeResult.totalTonnes} />
       </RevealSection>
 
       {/* 7. Personal Impact Score Profile */}
       <RevealSection>
-        <ImpactScoreGauge result={calculationResult} />
+        <ImpactScoreGauge result={safeResult} />
       </RevealSection>
 
       {/* Bottom Cross-Navigation Links */}
@@ -222,7 +223,7 @@ export const ResultsDashboard: React.FC = () => {
       <ShareResultModal
         isOpen={shareModalOpen}
         onClose={() => setShareModalOpen(false)}
-        result={calculationResult}
+        result={safeResult}
       />
 
     </div>

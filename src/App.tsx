@@ -11,40 +11,36 @@ import { ClimateDataLab } from './components/climateData/ClimateDataLab';
 import { EducationalSection } from './components/learn/EducationalSection';
 import { MethodologyPage } from './components/methodology/MethodologyPage';
 import { PresentationMode } from './components/presentation/PresentationMode';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 const cubicEase = [0.25, 0.46, 0.45, 0.94] as const;
 
 /**
- * Page transitions:
- * - Home page uses a gentle fade-in ONLY (it's full-scroll, not a "panel")
- * - All other views use a clean upward slide — like a real page loading, not a popup
- * - Exit is a fast fade-down (feels like navigating away cleanly)
+ * Clean, lightweight page transitions:
+ * Fast, non-blocking animations that mount immediately without waiting for exit deadlocks.
  */
 const pageFade: Variants = {
   initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { duration: 0.45, ease: cubicEase } },
-  exit:    { opacity: 0, scale: 0.99, filter: 'blur(1px)', transition: { duration: 0.18, ease: 'easeIn' } },
+  animate: { opacity: 1, transition: { duration: 0.3, ease: cubicEase } },
+  exit:    { opacity: 0, transition: { duration: 0.12, ease: 'easeIn' } },
 };
 
 const pageSlideUp: Variants = {
-  initial: { opacity: 0, y: 16 },
+  initial: { opacity: 0, y: 12 },
   animate: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.38, ease: cubicEase },
+    transition: { duration: 0.28, ease: cubicEase },
   },
   exit: {
     opacity: 0,
-    y: -10,
-    scale: 0.99,
-    filter: 'blur(1px)',
-    transition: { duration: 0.16, ease: 'easeIn' },
+    y: -6,
+    transition: { duration: 0.12, ease: 'easeIn' },
   },
 };
 
 const AppContent: React.FC = () => {
   const { view } = useCalculator();
-  const isHome = view === 'home';
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
@@ -57,38 +53,42 @@ const AppContent: React.FC = () => {
       <div>
         <Navbar />
         <main className="w-full overflow-x-hidden">
-          <AnimatePresence mode="wait">
-            {view === 'home' && (
-              <motion.div key="home" variants={pageFade} initial="initial" animate="animate" exit="exit">
-                <LandingPage />
-              </motion.div>
-            )}
-            {view === 'calculator' && (
-              <motion.div key="calculator" variants={pageSlideUp} initial="initial" animate="animate" exit="exit">
-                <CalculatorWizard />
-              </motion.div>
-            )}
-            {view === 'results' && (
-              <motion.div key="results" variants={pageSlideUp} initial="initial" animate="animate" exit="exit">
-                <ResultsDashboard />
-              </motion.div>
-            )}
-            {view === 'climate_data' && (
-              <motion.div key="climate_data" variants={pageSlideUp} initial="initial" animate="animate" exit="exit">
-                <ClimateDataLab />
-              </motion.div>
-            )}
-            {view === 'learn' && (
-              <motion.div key="learn" variants={pageSlideUp} initial="initial" animate="animate" exit="exit">
-                <EducationalSection />
-              </motion.div>
-            )}
-            {view === 'methodology' && (
-              <motion.div key="methodology" variants={pageSlideUp} initial="initial" animate="animate" exit="exit">
-                <MethodologyPage />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <ErrorBoundary fallbackTitle="Ecolyse View Loading Error">
+            <AnimatePresence initial={false}>
+              {view === 'home' && (
+                <motion.div key="home" variants={pageFade} initial="initial" animate="animate" exit="exit">
+                  <LandingPage />
+                </motion.div>
+              )}
+              {view === 'calculator' && (
+                <motion.div key="calculator" variants={pageSlideUp} initial="initial" animate="animate" exit="exit">
+                  <CalculatorWizard />
+                </motion.div>
+              )}
+              {view === 'results' && (
+                <motion.div key="results" variants={pageSlideUp} initial="initial" animate="animate" exit="exit">
+                  <ErrorBoundary fallbackTitle="Carbon Footprint Assessment Results">
+                    <ResultsDashboard />
+                  </ErrorBoundary>
+                </motion.div>
+              )}
+              {view === 'climate_data' && (
+                <motion.div key="climate_data" variants={pageSlideUp} initial="initial" animate="animate" exit="exit">
+                  <ClimateDataLab />
+                </motion.div>
+              )}
+              {view === 'learn' && (
+                <motion.div key="learn" variants={pageSlideUp} initial="initial" animate="animate" exit="exit">
+                  <EducationalSection />
+                </motion.div>
+              )}
+              {view === 'methodology' && (
+                <motion.div key="methodology" variants={pageSlideUp} initial="initial" animate="animate" exit="exit">
+                  <MethodologyPage />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </ErrorBoundary>
         </main>
       </div>
       <Footer />
